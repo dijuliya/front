@@ -1,0 +1,306 @@
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>
+        {{title}}
+        <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#addModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+      </h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-1">id</div>
+            <div class="col-md-2">createdate</div>
+            <div class="col-md-1">title</div>
+            <div class="col-md-2">organization_id</div>
+            <div class="col-md-2">priority_id</div>
+            <div class="col-md-2">order_from_id</div>
+            <div class="col-md-1">admin_id</div>
+            <div class="col-md-1">Actions</div>
+          </div>
+        </li>
+        <li class="list-group-item text-center" *ngIf="incident.length == 0">
+          No data
+        </li>
+        <li class="list-group-item" *ngFor="let item of incident">
+          <div class="row">
+            <div class="col-md-1">{{item.id}}</div>
+            <div class="col-md-2">{{item.createdate}}</div>
+            <div class="col-md-1">{{item.title}}</div>
+            <div class="col-md-2">{{item.organization.id}}</div>
+            <div class="col-md-2">{{item.priority.id}}</div>
+            <div class="col-md-2">{{item.user.id}}</div>
+            <div class="col-md-1">{{item.admin.id}}</div>
+            <div class="col-md-1">
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#editModal" (click)="loadIncidentHistory(item)"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#removeModal" (click)="setCurrentIncident(item)"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<div id="addModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <form>
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="clearCurrentIncident()"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Add Incident</h4>
+        </div>
+        <div class="modal-body" >
+          <div class="form-group" aria-readonly="true">
+            <label for="addModalCreatedate">Дата создания</label>
+            <input value = "2017-08-09" type="text" class="form-control glyphicon glyphicon-calendar" id="addModalCreatedate" placeholder="Createdate" name="createdate" [(ngModel)]="currentIncident.createdate">
+          </div>
+          <div class="form-group">
+            <label for="addModalTitle">Тема</label>
+            <input type="text" class="form-control" id="addModalTitle" placeholder="Title" name="title" [(ngModel)]="currentIncident.title">
+          </div>
+          <!--          <div class="form-group">
+                      <label for="addModalOrganization">Organization</label>
+                      <input type="" class="form-control" id="addModalOrganization" placeholder="Organization" name="organization_id" [(ngModel)]="currentIncident.organization_id">
+                    </div>-->
+          <div>
+            <label for="addModalOrganization">Организация</label>
+            <div>
+              <input type="number" class="form-control" id="addModalOrganization" placeholder="OrganizationId" name="organization_id" [(ngModel)]="currentIncident.organization.id">
+            </div>
+            <!--<select id="addModalOrganization" ><option></option>-->
+              <!--<option name>Рога и копыта</option>-->
+              <!--<option>Тестовая</option>-->
+              <!--<option>Первая</option>-->
+              <!--<option>Вторя</option>-->
+            <!--</select>-->
+          </div>
+
+
+          <div>
+            <label for="addModalPriority">Приоритет</label>
+            <div>
+              <input type="number" class="form-control" id="addModalPriority" placeholder="PriorityId" name="priority_id" [(ngModel)]="currentIncident.priority.id">
+            </div>
+            <!--<select id="addModalPriority" ><option></option>-->
+              <!--<option name>Низкий</option>-->
+              <!--<option>Средний</option>-->
+              <!--<option>Высокий</option>-->
+            <!--</select>-->
+          </div>
+
+          <div class="form-group">
+            <label for="addModalUser">Пользователь</label>
+            <div>
+              <input type="text" class="form-control" id="addModalUser" placeholder="UserId" name="user_id" [(ngModel)]="currentIncident.user.id">
+            </div>
+            <!--<input type="text" class="form-control" id="addModalUser" placeholder="User" name="user" [(ngModel)]="currentIncident.user">-->
+          </div>
+
+          <div class="form-group">
+            <label for="addModalAdmin">Администратор</label>
+            <div>
+              <input disabled="true" value = "admin" type="text" class="form-control" id="addModalAdmin" placeholder="Admin" name="admin" [(ngModel)]="currentIncident.admin.id">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="addIncident()">Save</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </form>
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="editModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <form>
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="clearCurrentIncident()"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Edit incident</h4>
+        </div>
+        <div class="modal-body">
+
+          <!--<div class="form-group">-->
+            <!--<label for="editModalMessage">Message</label>-->
+            <!--<input type="text" class="form-control" id="editModalMessage" placeholder="Message" name="message" [(ngModel)]="currentIncident.message">-->
+          <!--</div>-->
+          <ul class="list-group">
+            <li class="list-group-item" *ngFor="let item of history">
+              #{{item.id}} {{item.message}} <button type="button" class="btn btn-default btn-xs" (click)="removeIncidentHistory(item)"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+
+            </li>
+          </ul>
+
+          <form class="form-inline">
+            <div class="form-group">
+              <label for="user_id">id</label>
+              <input type="number" class="form-control" id="user_id" name="user_id" placeholder="user id" [(ngModel)]="currentHistory.user.id">
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <input type="text" class="form-control" id="message" name="message" placeholder="" [(ngModel)]="currentHistory.message">
+            </div>
+            <button type="submit" class="btn btn-default" (click)="addIncidentHistory()">Add</button>
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="updateIncident()">Save</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </form>
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="removeModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="clearCurrentIncident()"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Remove incident</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure to remove this incident?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="removeIncident()">Remove</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--<div class="container">-->
+  <!--<div class="row">-->
+    <!--<div class="col-md-12">-->
+      <!--<h2>-->
+        <!--{{title}}-->
+        <!--<button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#addModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>-->
+      <!--</h2>-->
+    <!--</div>-->
+  <!--</div>-->
+  <!--<div class="row">-->
+    <!--<div class="col-md-12">-->
+      <!--<ul class="list-group">-->
+        <!--<li class="list-group-item">-->
+          <!--<div class="row">-->
+            <!--<div class="col-md-1">id</div>-->
+            <!--<div class="col-md-2">createdate</div>-->
+            <!--<div class="col-md-1">title</div>-->
+            <!--<div class="col-md-2">organization_id</div>-->
+            <!--<div class="col-md-2">priority_id</div>-->
+            <!--<div class="col-md-2">order_from_id</div>-->
+            <!--<div class="col-md-1">admin_id</div>-->
+            <!--<div class="col-md-1">Actions</div>-->
+          <!--</div>-->
+        <!--</li>-->
+        <!--<li class="list-group-item text-center" *ngIf="incident.length == 0">-->
+          <!--No data-->
+        <!--</li>-->
+        <!--<li class="list-group-item" *ngFor="let item of incident">-->
+          <!--<div class="row">-->
+            <!--<div class="col-md-1">{{item.id}}</div>-->
+            <!--<div class="col-md-2">{{item.createdate}}</div>-->
+            <!--<div class="col-md-1">{{item.title}}</div>-->
+            <!--<div class="col-md-2">{{item.organization_id}}</div>-->
+            <!--<div class="col-md-2">{{item.priority_id}}</div>-->
+            <!--<div class="col-md-2">{{item.order_from_id}}</div>-->
+            <!--<div class="col-md-1">{{item.admin_id}}</div>-->
+            <!--<div class="col-md-1">-->
+              <!--<div class="btn-group" role="group">-->
+                <!--<button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#editModal" (click)="setCurrentIncident(item)"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>-->
+                <!--<button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#removeModal" (click)="setCurrentIncident(item)"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</li>-->
+      <!--</ul>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
+
+
+<!--<div id="addModal" class="modal fade" tabindex="-1" role="dialog">-->
+  <!--<div class="modal-dialog" role="document">-->
+    <!--<form>-->
+      <!--<div class="modal-content">-->
+        <!--<div class="modal-header">-->
+          <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+          <!--<h4 class="modal-title">Add Incident</h4>-->
+        <!--</div>-->
+        <!--<div class="modal-body">-->
+          <!--<div class="form-group">-->
+            <!--<label for="addModalCreatedate">Createdate</label>-->
+            <!--<input type="date" class="form-control" id="addModalCreatedate" placeholder="Createdate" name="createdate" [(ngModel)]="currentIncident.createdate">-->
+          <!--</div>-->
+          <!--<div class="form-group">-->
+            <!--<label for="addModalTitle">Title</label>-->
+            <!--<input type="text" class="form-control" id="addModalTitle" placeholder="Title" name="title" [(ngModel)]="currentIncident.title">-->
+          <!--</div>-->
+          <!--<div class="form-group">-->
+            <!--<label for="addModalOrganization">Organization</label>-->
+            <!--<input type="tel" class="form-control" id="addModalOrganization" placeholder="Organization" name="organization_id" [(ngModel)]="currentIncident.organization_id">-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div class="modal-footer">-->
+          <!--<button type="button" class="btn btn-primary" data-dismiss="modal" (click)="addIncident()">Save</button>-->
+        <!--</div>-->
+      <!--</div>&lt;!&ndash; /.modal-content &ndash;&gt;-->
+    <!--</form>-->
+  <!--</div>&lt;!&ndash; /.modal-dialog &ndash;&gt;-->
+<!--</div>&lt;!&ndash; /.modal &ndash;&gt;-->
+
+<!--<div id="editModal" class="modal fade" tabindex="-1" role="dialog">-->
+  <!--<div class="modal-dialog" role="document">-->
+    <!--<form>-->
+      <!--<div class="modal-content">-->
+        <!--<div class="modal-header">-->
+          <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+          <!--<h4 class="modal-title">Edit incident</h4>-->
+        <!--</div>-->
+        <!--<div class="modal-body">-->
+          <!--<div class="form-group">-->
+            <!--<label for="editModalCreatedate">Createdate</label>-->
+            <!--<input type="text" class="form-control" id="editModalCreatedate" placeholder="Createdate" name="createdate" [(ngModel)]="currentIncident.createdate">-->
+          <!--</div>-->
+          <!--<div class="form-group">-->
+            <!--<label for="editModalTitle">Title</label>-->
+            <!--<input type="text" class="form-control" id="editModalTitle" placeholder="Title" name="title" [(ngModel)]="currentIncident.title">-->
+          <!--</div>-->
+          <!--<div class="form-group">-->
+            <!--<label for="editModalOrganization">Organization</label>-->
+            <!--<input type="tel" class="form-control" id="editModalOrganization" placeholder="Organization" name="organization_id" [(ngModel)]="currentIncident.organization_id">-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div class="modal-footer">-->
+          <!--<button type="button" class="btn btn-primary" data-dismiss="modal" (click)="updateIncident()">Save</button>-->
+        <!--</div>-->
+      <!--</div>&lt;!&ndash; /.modal-content &ndash;&gt;-->
+    <!--</form>-->
+  <!--</div>&lt;!&ndash; /.modal-dialog &ndash;&gt;-->
+<!--</div>&lt;!&ndash; /.modal &ndash;&gt;-->
+
+<!--<div id="removeModal" class="modal fade" tabindex="-1" role="dialog">-->
+  <!--<div class="modal-dialog" role="document">-->
+    <!--<div class="modal-content">-->
+      <!--<div class="modal-header">-->
+        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+        <!--<h4 class="modal-title">Remove incident</h4>-->
+      <!--</div>-->
+      <!--<div class="modal-body">-->
+        <!--<p>Are you sure to remove this incident?</p>-->
+      <!--</div>-->
+      <!--<div class="modal-footer">-->
+        <!--<button type="button" class="btn btn-danger" data-dismiss="modal" (click)="removeIncident()">Remove</button>-->
+      <!--</div>-->
+    <!--</div>&lt;!&ndash; /.modal-content &ndash;&gt;-->
+  <!--</div>&lt;!&ndash; /.modal-dialog &ndash;&gt;-->
+<!--</div>&lt;!&ndash; /.modal &ndash;&gt;-->
